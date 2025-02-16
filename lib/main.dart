@@ -246,6 +246,10 @@ class _HomePageState extends State<HomePage> {
       floatingActionButton: ExpandableFab(
         key: expandableFabKey, // Assign the key to ExpandableFab
         distance: 0.12.sh, // Distance between buttons when expanded
+        overlayStyle: ExpandableFabOverlayStyle(
+          blur: 3,
+          color: Colors.black.withOpacity(0.3),
+        ),
         openButtonBuilder: FloatingActionButtonBuilder(
           size: 0.18.sh,
           builder: (BuildContext context, void Function()? onPressed,
