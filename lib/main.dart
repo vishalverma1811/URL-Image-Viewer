@@ -10,6 +10,8 @@ void main() {
 }
 
 /// The main application widget.
+///
+/// This widget initializes the app and sets up the theme and home page.
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
 
@@ -46,6 +48,10 @@ class MyApp extends StatelessWidget {
 }
 
 /// The home page of the application.
+///
+/// This page allows users to input an image URL, load the image, and view it.
+/// It also supports fullscreen mode and includes a floating action button for
+/// additional controls.
 class HomePage extends StatefulWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -53,16 +59,24 @@ class HomePage extends StatefulWidget {
   State<HomePage> createState() => _HomePageState();
 }
 
-/// The state class for the home page.
 class _HomePageState extends State<HomePage> {
-  String imageUrl = ''; // The URL of the image to display.
-  final TextEditingController urlController =
-      TextEditingController(); // Controller for the URL input field.
-  bool isFullScreen = false; // Tracks whether the app is in fullscreen mode.
-  final formKey = GlobalKey<FormState>(); // Key for form validation
-  final expandableFabKey =
-      GlobalKey<ExpandableFabState>(); // Key for ExpandableFab
-  bool isLoading = false; // Tracks whether the image is loading.
+  /// The URL of the image to display.
+  String imageUrl = '';
+
+  /// Controller for the URL input field.
+  final TextEditingController urlController = TextEditingController();
+
+  /// Tracks whether the app is in fullscreen mode.
+  bool isFullScreen = false;
+
+  /// Key for form validation.
+  final formKey = GlobalKey<FormState>();
+
+  /// Key for controlling the ExpandableFab state.
+  final expandableFabKey = GlobalKey<ExpandableFabState>();
+
+  /// Tracks whether the image is currently loading.
+  bool isLoading = false;
 
   @override
   void dispose() {
@@ -71,6 +85,9 @@ class _HomePageState extends State<HomePage> {
   }
 
   /// Toggles the browser's fullscreen mode.
+  ///
+  /// If the app is not in fullscreen mode, it enters fullscreen mode.
+  /// Otherwise, it exits fullscreen mode.
   void toggleFullScreen() {
     final element = html.document.documentElement;
     if (html.document.fullscreenElement == null) {
@@ -83,28 +100,31 @@ class _HomePageState extends State<HomePage> {
   }
 
   /// Loads the image from the provided URL.
+  ///
+  /// Validates the URL input and simulates a network request to load the image.
+  /// If successful, the image is displayed; otherwise, an error is shown.
   void handleImageLoad() async {
     if (formKey.currentState!.validate()) {
       setState(() {
-        isLoading = true; // Start loading
+        isLoading = true;
       });
 
       try {
-        // Simulate a network request (replace with actual image loading logic)
-        await Future.delayed(const Duration(seconds: 1)); // Replace this
+        // Simulate a network request (replace with actual image loading logic).
+        await Future.delayed(const Duration(seconds: 1));
 
         setState(() {
           imageUrl = urlController.text;
         });
 
-        // Add double-tap event listener to the image
+        // Add double-tap event listener to the image.
         final imgElement = html.document.querySelector('img');
         if (imgElement != null) {
           imgElement.onDoubleClick.listen((event) => toggleFullScreen());
         }
       } finally {
         setState(() {
-          isLoading = false; // Stop loading
+          isLoading = false;
         });
       }
     }
@@ -125,14 +145,14 @@ class _HomePageState extends State<HomePage> {
       body: Padding(
         padding: EdgeInsets.all(0.02.sh),
         child: Form(
-          key: formKey, // Assign the form key
+          key: formKey,
           child: Column(
             children: [
               // URL input field
               Row(
                 children: [
-                  SizedBox(
-                    width: 0.8.sw,
+                  Expanded(
+                    flex: 4,
                     child: TextFormField(
                       controller: urlController,
                       decoration: InputDecoration(
@@ -158,43 +178,45 @@ class _HomePageState extends State<HomePage> {
                     ),
                   ),
                   SizedBox(width: 0.02.sh),
-                  SizedBox(
-                    width: 0.16.sw,
-                    height: 0.06.sh,
-                    child: ElevatedButton(
-                      onPressed: isLoading ? null : () => handleImageLoad(),
-                      style: ElevatedButton.styleFrom(
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 0.02.sw, vertical: 0.01.sh),
-                        backgroundColor: Colors.blueGrey,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(0.02.sh),
+                  Expanded(
+                    flex: 1,
+                    child: SizedBox(
+                      height: 0.06.sh,
+                      child: ElevatedButton(
+                        onPressed: isLoading ? null : () => handleImageLoad(),
+                        style: ElevatedButton.styleFrom(
+                          padding: EdgeInsets.symmetric(
+                              horizontal: 0.02.sw, vertical: 0.01.sh),
+                          backgroundColor: Colors.blueGrey,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(0.02.sh),
+                          ),
                         ),
+                        child: isLoading
+                            ? CircularProgressIndicator(
+                              color: Colors.black,
+                              strokeWidth: 2.w,
+                            )
+                            : Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    'Load',
+                                    style: TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 0.02.sh,
+                                        fontWeight: FontWeight.w700),
+                                  ),
+                                  SizedBox(
+                                    width: 0.01.sw,
+                                  ),
+                                  const Icon(
+                                    Icons.arrow_forward,
+                                    color: Colors.white,
+                                  ),
+                                ],
+                              ),
                       ),
-                      child: isLoading
-                          ? CircularProgressIndicator(
-                            color: Colors.black,
-                            strokeWidth: 2.w,
-                          )
-                          : Row(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Load',
-                                  style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 0.02.sh,
-                                      fontWeight: FontWeight.w700),
-                                ),
-                                SizedBox(
-                                  width: 0.01.sw,
-                                ),
-                                const Icon(
-                                  Icons.arrow_forward,
-                                  color: Colors.white,
-                                ),
-                              ],
-                            ),
                     ),
                   ),
                 ],
@@ -244,8 +266,8 @@ class _HomePageState extends State<HomePage> {
       ),
       floatingActionButtonLocation: ExpandableFab.location,
       floatingActionButton: ExpandableFab(
-        key: expandableFabKey, // Assign the key to ExpandableFab
-        distance: 0.12.sh, // Distance between buttons when expanded
+        key: expandableFabKey,
+        distance: 0.12.sh,
         overlayStyle: ExpandableFabOverlayStyle(
           blur: 3,
           color: Colors.black.withOpacity(0.3),
@@ -289,7 +311,7 @@ class _HomePageState extends State<HomePage> {
               if (!isFullScreen) {
                 toggleFullScreen();
               }
-              expandableFabKey.currentState?.toggle(); // Close the FAB
+              expandableFabKey.currentState?.toggle();
             },
           ),
           FloatingActionButton.small(
@@ -303,7 +325,7 @@ class _HomePageState extends State<HomePage> {
               if (isFullScreen) {
                 toggleFullScreen();
               }
-              expandableFabKey.currentState?.toggle(); // Close the FAB
+              expandableFabKey.currentState?.toggle();
             },
           ),
         ],
@@ -313,4 +335,7 @@ class _HomePageState extends State<HomePage> {
 }
 
 /// A custom widget factory for rendering HTML with cached network images.
+///
+/// This factory integrates with the `flutter_widget_from_html_core` package
+/// to support cached network images.
 class MyWidgetFactory extends WidgetFactory with CachedNetworkImageFactory {}
